@@ -23,7 +23,7 @@ class MessagesController < ApplicationController
 
     return unless message.save
 
-    redirect_to root_path
+    ActionCable.server.broadcast 'chatroom_channel', mod_message: message_render(message)
   end
 
   # PATCH/PUT /messages/1 or /messages/1.json
@@ -59,5 +59,9 @@ class MessagesController < ApplicationController
   # Only allow a list of trusted parameters through.
   def message_params
     params.require(:message).permit(:body)
+  end
+
+  def message_render(message)
+    render(partial: 'message', locals: { message: message })
   end
 end
